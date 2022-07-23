@@ -77,7 +77,7 @@ func checkIdcard(c *gin.Context) {
 
 	//request header
 	//Authorization
-	//	bears := "Bearer " + jwtToken
+	//bears := "Bearer " + jwtToken
 
 	//request body
 
