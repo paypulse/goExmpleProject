@@ -5,7 +5,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/mitchellh/mapstructure"
 	"io/ioutil"
+	"log"
 	"net/http"
 )
 
@@ -47,8 +49,8 @@ type statusRes struct {
 
 // test request Structure
 type testRequest struct {
-	age  string `json:age`
-	name string `json:name`
+	Age  string `json:"Age"`
+	Name string `json:"Name"`
 }
 
 // token 값
@@ -93,24 +95,52 @@ func driverCard(c *gin.Context) {
 	body := c.Request.Body
 	value, err := ioutil.ReadAll(body)
 	fmt.Println(value)
+
+	var testReq testRequest
+	json.Unmarshal(value, &testReq)
+
+	fmt.Println("console. please ::", testReq)
+
 	if err != nil {
 		fmt.Println(err.Error())
 	}
 
+	//map으로 처리 된 경우
 	var data map[string]interface{}
 	json.Unmarshal([]byte(value), &data) // JSON을 Go언어 자료형으로 변환(여기서는 map으로 변환)
 
-	fmt.Println("test name  : ", []byte(value))
-
-	var data1 map[testRequest]interface{}
-	fmt.Println("test test test: ", data1)
+	//map to struct
+	resultT := &testRequest{}
+	mapstructure.Decode(data, &resultT)
+	fmt.Println("resultT : ", resultT)
 
 	c.JSON(http.StatusOK, gin.H{
 		"name": data["name"],
 		"age":  data["age"],
+		"c":    string(value),
 	})
 
-	fmt.Println(err)
+	fmt.Println("data : ", data)
+
+	real := []byte(string(value))
+	err34 := json.Unmarshal(real, &resultT)
+	if err34 != nil {
+		log.Println(err34)
+	}
+	fmt.Println("please please : ", resultT.Age)
+
+	///
+	var t1 testRequest
+	json.NewDecoder(c.Request.Body).Decode(&t1)
+	fmt.Println("Test t1 ::", t1)
+
+	var testReq1 testRequest
+	json.Unmarshal([]byte(value), &testReq1)
+	fmt.Println("testReq1 :", testReq1)
+
+	fmt.Println("string req : ", string(value))
+	fmt.Println("[]byte(value) : ", []byte(value))
+
 	fmt.Println("***************** end check ****************")
 
 }
@@ -221,6 +251,7 @@ func createToken(c *gin.Context) {
 	result := string(respBody)
 	var m map[string]interface{}
 	json.Unmarshal([]byte(result), &m)
+
 	jwtToken := m["jwt"]
 	fmt.Println(jwtToken)
 
