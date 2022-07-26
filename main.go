@@ -1,8 +1,9 @@
 package main
 
 import (
-	"bytes"
 	"encoding/json"
+	Common "example.com/ginExampleTest/com/wlf/common"
+	Controller "example.com/ginExampleTest/com/wlf/status/api"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/mitchellh/mapstructure"
@@ -11,65 +12,28 @@ import (
 	"net/http"
 )
 
-// auth
-type Auth struct {
-	success        string
-	message        string
-	jwt            string
-	expires_in     string
-	transaction_id string
-}
-
-// requestField
-type RequestField struct {
-	email    string
-	password string
-}
-
-// 진위 확인 request
-type statusReq struct {
-	identity       string
-	issueDate      string
-	userName       string
-	secret_Mode    bool
-	birthDate      string
-	licenseNo      string
-	passportNo     string
-	expirationDate string
-	nationaliy     string
-	biz_no         string
-}
-
-// 진위 확인 response
-type statusRes struct {
-	success        string
-	message        string
-	transaction_id string
-}
-
 // test request Structure
 type testRequest struct {
 	Age  string `json:"Age"`
 	Name string `json:"Name"`
 }
 
-// token 값
-var jwtToken string
-
 func main() {
 
 	//gin 선언 하기
 	r := gin.Default()
+
+	//Api.Test1()
 
 	////요청 처리
 	//token
 	r.GET("/getToken", httpHandler)
 
 	//진위 확인 (신분증)
-	r.POST("/checkIdcard", statusTest)
+	r.POST("/checkIdcard", Controller.IdCardStatus)
 
 	//진위 확인 (운전 면허증)
-	r.POST("/checkDriverCard", driverCard)
+	r.POST("/checkDriverCard", Controller.DriverCardStatus)
 
 	r.Run(":8084")
 
@@ -77,10 +41,8 @@ func main() {
 
 // 핸들러 함수로 전달된 컨텍스트를 통해 클라이언트에게 http응답을 할 수 있다.
 func httpHandler(c *gin.Context) {
-
 	//token check
 	createToken(c)
-
 }
 
 // 진위 확인
@@ -90,6 +52,8 @@ func statusTest(c *gin.Context) {
 
 // 진위 확인
 func driverCard(c *gin.Context) {
+	//전역 token 확인
+
 	fmt.Println("***************** start check ****************")
 	fmt.Println(c.Request.Body)
 	body := c.Request.Body
@@ -145,120 +109,76 @@ func driverCard(c *gin.Context) {
 
 }
 
-type Post struct {
-}
-
 // 진위 확인 여부 (운전 면허증)
 
 // 진위 확인 여부 (주민등록증)
 func checkIdcard(c *gin.Context) {
 
-	fmt.Println("*********** check id ************")
-
-	postBody, _ := json.Marshal(map[string]string{
-		"email":    "ableman82@useb.co.kr",
-		"password": "useb",
-	})
-
-	responseBody := bytes.NewBuffer(postBody)
-	fmt.Println(responseBody)
-
-	//reqBody := bytes.NewBufferString("Post plain text")
-	resp, err := http.Post("https://auth.useb.co.kr/oauth/token", "application/json", responseBody)
-
-	if err != nil {
-		panic(err)
-	}
-
-	//response 체크
-	respBody, err := ioutil.ReadAll(resp.Body)
-	result := string(respBody)
-	var m map[string]interface{}
-	json.Unmarshal([]byte(result), &m)
-	jwtToken := m["jwt"]
-	fmt.Println(jwtToken)
+	/////////////////
 
 	//request body
-	postBody1, _ := json.Marshal(map[string]string{
-		"identity":            "8811211056911",
-		"issueDate":           "20000301",
-		"userName":            "홍길동",
-		"secret_modeoptional": "true",
-	})
-	requestBody := bytes.NewBuffer(postBody1)
+	//postBody1, _ := json.Marshal(map[string]string{
+	//	"identity":            "8811211056911",
+	//	"issueDate":           "20000301",
+	//	"userName":            "홍길동",
+	//	"secret_modeoptional": "true",
+	//})
+	//requestBody := bytes.NewBuffer(postBody1)
 
-	bearers := "Bearer " + jwtToken.(string)
-
-	r, err := http.NewRequest("POST", "https://api3.useb.co.kr/status/idcard", requestBody)
-	if err != nil {
-		panic(err)
-	}
-	r.Header.Set("Authorization", bearers)
-
-	//client객체에서  request 실행
-	client := &http.Client{}
-	resp1, err := client.Do(r)
-	if err != nil {
-		panic(err)
-	}
-	defer resp1.Body.Close()
-
-	//response 체크
-	respBodyCh, err := ioutil.ReadAll(resp1.Body)
-
-	result12 := string(respBodyCh)
-	var m1 map[string]interface{}
-	json.Unmarshal([]byte(result12), &m1)
-	success := m1["success"]
-	message := m1["message"]
-	error_code := m1["error_code"]
-	transaction_id := m1["transaction_id"]
-
-	if err == nil {
-		c.JSON(http.StatusOK, gin.H{
-			"success ":       success,
-			"message":        message,
-			"error_code":     error_code,
-			"transaction_id": transaction_id,
-		})
-
-	}
+	//bearers := "Bearer " + jwtToken.(string)
+	//
+	//r, err := http.NewRequest("POST", "https://api3.useb.co.kr/status/idcard", requestBody)
+	//if err != nil {
+	//	panic(err)
+	//}
+	//r.Header.Set("Authorization", bearers)
+	//
+	////client객체에서  request 실행
+	//client := &http.Client{}
+	//resp1, err := client.Do(r)
+	//if err != nil {
+	//	panic(err)
+	//}
+	//defer resp1.Body.Close()
+	//
+	////response 체크
+	//respBodyCh, err := ioutil.ReadAll(resp1.Body)
+	//
+	//result12 := string(respBodyCh)
+	//var m1 map[string]interface{}
+	//json.Unmarshal([]byte(result12), &m1)
+	//success := m1["success"]
+	//message := m1["message"]
+	//error_code := m1["error_code"]
+	//transaction_id := m1["transaction_id"]
+	//
+	//if err == nil {
+	//	c.JSON(http.StatusOK, gin.H{
+	//		"success ":       success,
+	//		"message":        message,
+	//		"error_code":     error_code,
+	//		"transaction_id": transaction_id,
+	//	})
+	//
+	//}
 }
 
 // 토큰 확인
 func createToken(c *gin.Context) {
-	//	requestField := RequestField{"ableman82@useb.co.kr", "useb"}
-	//	pbytes, _ := xml.Marshal(requestField)
-	//	buff := bytes.NewBuffer(pbytes)
-
-	postBody, _ := json.Marshal(map[string]string{
-		"email":    "ableman82@useb.co.kr",
-		"password": "useb",
-	})
-
-	responseBody := bytes.NewBuffer(postBody)
-	fmt.Println(responseBody)
-
-	//reqBody := bytes.NewBufferString("Post plain text")
-	resp, err := http.Post("https://auth.useb.co.kr/oauth/token", "application/json", responseBody)
+	////////////////request 확인
+	body := c.Request.Body
+	value, err := ioutil.ReadAll(body)
+	//token
+	var tokenInfo Common.TokenCreate
+	json.Unmarshal([]byte(value), &tokenInfo)
+	jwtToken := Common.GetToken(tokenInfo.Email, tokenInfo.Password)
 
 	if err != nil {
 		panic(err)
 	}
 
-	//response 체크
-	respBody, err := ioutil.ReadAll(resp.Body)
-	result := string(respBody)
-	var m map[string]interface{}
-	json.Unmarshal([]byte(result), &m)
+	c.JSON(http.StatusOK, gin.H{
+		"token": jwtToken,
+	})
 
-	jwtToken := m["jwt"]
-	fmt.Println(jwtToken)
-
-	if err == nil {
-		//응답 처리
-		c.JSON(http.StatusOK, gin.H{
-			"result": jwtToken,
-		})
-	}
 }
