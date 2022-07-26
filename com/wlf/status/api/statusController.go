@@ -5,7 +5,6 @@ import (
 	Common "example.com/ginExampleTest/com/wlf/common"
 	Request "example.com/ginExampleTest/com/wlf/status/request"
 	Service "example.com/ginExampleTest/com/wlf/status/service"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
 	"net/http"
@@ -41,8 +40,19 @@ func IdCardStatus(c *gin.Context) {
 // 진위 확인 :: 운전 면허증
 func DriverCardStatus(c *gin.Context) {
 
-	token := Common.TokenTest()
+	jwtToken := Common.TokenTest()
+	body := c.Request.Body
+	value, _ := ioutil.ReadAll(body)
+	var driverCard Request.DriverCard
+	json.Unmarshal([]byte(value), &driverCard)
 
-	fmt.Println("token Test : ", token)
+	resultRe := Service.DriverCardStateService(jwtToken, driverCard)
+
+	c.JSON(http.StatusOK, gin.H{
+		"success":        resultRe.Success,
+		"message":        resultRe.Message,
+		"error_code":     resultRe.ErrorCode,
+		"transaction_id": resultRe.TransactionId,
+	})
 
 }

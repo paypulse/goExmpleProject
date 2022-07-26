@@ -35,6 +35,9 @@ func main() {
 	//진위 확인 (운전 면허증)
 	r.POST("/checkDriverCard", Controller.DriverCardStatus)
 
+	//진위 확인 (한국 여권)
+	r.POST("/checkPassport")
+
 	r.Run(":8084")
 
 }
