@@ -13,7 +13,7 @@ type CommonResponse struct {
 }
 
 // 사업자 등록증
-type AlianResponse struct {
+type BusinessRegis struct {
 	Success       bool         `json:"success"`
 	Message       string       `json:"message"`
 	Data          DataResponse `json:"data"`

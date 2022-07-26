@@ -28,7 +28,7 @@ type PassPort struct {
 	IssueDate      string `json:"issueDate"`
 	ExpirationDate string `json:"expirationDate"`
 	BirthDate      string `json:"birthDate"`
-	SecretMode     string `json:"secret_mode"`
+	SecretMode     bool   `json:"secret_mode"`
 }
 
 // 외국인 여권
@@ -36,14 +36,14 @@ type PassPortOverSeas struct {
 	PassportNo  string `json:"passportNo"`
 	Nationality string `json:"nationality"`
 	BirthDate   string `json:"birthDate"`
-	SecretMode  string `json:"secret_mode"`
+	SecretMode  bool   `json:"secret_mode"`
 }
 
 // 외국인 등록증
 type Alien struct {
 	IssueNo    string `json:"issueNo"`
 	IssueDate  string `json:"issueDate"`
-	SecretMode string `json:"secret_mode"`
+	SecretMode bool   `json:"secret_mode"`
 }
 
 // 사업자등록 및 휴폐업 조회

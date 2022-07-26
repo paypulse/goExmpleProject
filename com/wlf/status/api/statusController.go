@@ -56,3 +56,86 @@ func DriverCardStatus(c *gin.Context) {
 	})
 
 }
+
+// 진위 확인 :: 한국 여권
+func PassportStatus(c *gin.Context) {
+
+	jwtToken := Common.TokenTest()
+	body := c.Request.Body
+	value, _ := ioutil.ReadAll(body)
+
+	var passport Request.PassPort
+	json.Unmarshal([]byte(value), &passport)
+
+	resultRe := Service.PassportStateService(jwtToken, passport)
+
+	c.JSON(http.StatusOK, gin.H{
+		"success":        resultRe.Success,
+		"message":        resultRe.Message,
+		"error_code":     resultRe.ErrorCode,
+		"transaction_id": resultRe.TransactionId,
+	})
+
+}
+
+// 진위 확인 :: 외국인 여권
+func PassportOverSeas(c *gin.Context) {
+
+	jwtToken := Common.TokenTest()
+	body := c.Request.Body
+	value, _ := ioutil.ReadAll(body)
+
+	var passportOverSeas Request.PassPortOverSeas
+	json.Unmarshal([]byte(value), &passportOverSeas)
+
+	resultRe := Service.PassportOverSeasService(jwtToken, passportOverSeas)
+
+	c.JSON(http.StatusOK, gin.H{
+		"success":        resultRe.Success,
+		"message":        resultRe.Message,
+		"error_code":     resultRe.ErrorCode,
+		"transaction_id": resultRe.TransactionId,
+	})
+
+}
+
+// 진위 확인 :: 외국인 등록증
+func Alien(c *gin.Context) {
+
+	jwtToken := Common.TokenTest()
+	body := c.Request.Body
+	value, _ := ioutil.ReadAll(body)
+
+	var alien Request.Alien
+	json.Unmarshal([]byte(value), &alien)
+
+	resultRe := Service.Alien(jwtToken, alien)
+
+	c.JSON(http.StatusOK, gin.H{
+		"success":        resultRe.Success,
+		"message":        resultRe.Message,
+		"error_code":     resultRe.ErrorCode,
+		"transaction_id": resultRe.TransactionId,
+	})
+
+}
+
+// 진위 확인 :: 사업자 등록 및 휴폐업 조회
+func BusinessRegis(c *gin.Context) {
+	jwtToken := Common.TokenTest()
+	body := c.Request.Body
+	value, _ := ioutil.ReadAll(body)
+
+	var alien Request.Alien
+	json.Unmarshal([]byte(value), &alien)
+
+	resultRe := Service.BusinessRegis(jwtToken, alien)
+
+	c.JSON(http.StatusOK, gin.H{
+		"success":        resultRe.Success,
+		"message":        resultRe.Message,
+		"data":           resultRe.Data,
+		"transaction_id": resultRe.TransactionId,
+	})
+
+}
