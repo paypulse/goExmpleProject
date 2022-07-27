@@ -209,13 +209,13 @@ func Alien(jwtToken interface{}, alien Request.Alien) Response.CommonResponse {
 }
 
 // 진위 확인 :: 사업자 등록 및 휴폐업 조회
-func BusinessRegis(jwtToken interface{}, alien Request.Alien) Response.BusinessRegis {
+func BusinessRegis(jwtToken interface{}, business Request.BusinessRegistraction) Response.BusinessRegis {
 	fmt.Println("jwtToken :::", jwtToken)
-	fmt.Println("DriverCard :::", alien)
+	fmt.Println("DriverCard :::", business)
 
 	/*bearer token */
 	bearers := "Bearer " + jwtToken.(string)
-	postBody1, _ := json.Marshal(alien)
+	postBody1, _ := json.Marshal(business)
 	requestBody := bytes.NewBuffer(postBody1)
 
 	respone, err := http.NewRequest("POST", "https://api3.useb.co.kr/status-doc/business-registration", requestBody)
@@ -236,11 +236,14 @@ func BusinessRegis(jwtToken interface{}, alien Request.Alien) Response.BusinessR
 	resBodyCheck, _ := ioutil.ReadAll(resAgain.Body)
 	result := string(resBodyCheck)
 
-	//var m1 map[string]interface{}
-	//json.Unmarshal([]byte(result), &m1)
+	var m1 map[string]interface{}
+	json.Unmarshal([]byte(result), &m1)
+	fmt.Println("m1 :::", m1)
 
 	var responInfo Response.BusinessRegis
 	json.Unmarshal([]byte(result), &responInfo)
+
+	fmt.Println("responseInfo :::", responInfo)
 
 	return responInfo
 

@@ -126,16 +126,18 @@ func BusinessRegis(c *gin.Context) {
 	body := c.Request.Body
 	value, _ := ioutil.ReadAll(body)
 
-	var alien Request.Alien
-	json.Unmarshal([]byte(value), &alien)
+	var business Request.BusinessRegistraction
+	json.Unmarshal([]byte(value), &business)
 
-	resultRe := Service.BusinessRegis(jwtToken, alien)
+	resultRe := Service.BusinessRegis(jwtToken, business)
 
 	c.JSON(http.StatusOK, gin.H{
-		"success":        resultRe.Success,
-		"message":        resultRe.Message,
-		"data":           resultRe.Data,
-		"transaction_id": resultRe.TransactionId,
+		"success":                 resultRe.Success,
+		"message":                 resultRe.Message,
+		"tax_type_changing_date:": resultRe.TaxTypeChangeDate,
+		"tax_type_code":           resultRe.TaxTypeCode,
+		"tax_type_name":           resultRe.TaxTypeName,
+		"transaction_id":          resultRe.TransactionId,
 	})
 
 }

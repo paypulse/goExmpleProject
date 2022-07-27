@@ -9,12 +9,6 @@ import (
 	"net/http"
 )
 
-// test request Structure
-type testRequest struct {
-	Age  string `json:"Age"`
-	Name string `json:"Name"`
-}
-
 func main() {
 
 	//gin 선언 하기
